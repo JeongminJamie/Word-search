@@ -1,8 +1,10 @@
 <script>
   import Header from "../components/Header.svelte";
-  import { getDatabase, ref, push } from "firebase/database";
+  import { getDatabase, ref, child, push } from "firebase/database";
+  import { gameUrl$ } from "../store.js";
 
   const db = getDatabase();
+  const gamesRef = ref(db, "games/");
 
   let title;
   let description;
@@ -28,20 +30,31 @@
   let word20;
 
   let wordList = [];
+  let isSubmitted = false;
 
   const addtoWordList = (word) => {
-    wordList.push(word);
+    if (word.length > 2 && word.length < 7) {
+      wordList.push(word);
+    } else {
+      alert("Word is too short or long");
+    }
   };
 
   const handleSubmit = () => {
-    for (const word of wordList) {
-      if (word.length > 2 && word.length < 7)
-        push(ref(db, "games/"), {
+    if (wordList.length > 9 && wordList.length <= 20) {
+      for (const word of wordList) {
+        push(gamesRef, {
           title,
           description,
-          word,
         });
+        gamesRef.child("words").setValue(word);
+        isSubmitted = true;
+        const newGameUrl = `/#/puzzle/${title}`;
+        gameUrl$.set(newGameUrl);
+        console.log(gameUrl$);
+      }
     }
+    alert("Please fill out more than 10 fields");
   };
 </script>
 
@@ -72,8 +85,9 @@
       <div class="word-list-container">
         <label for="word-list">Word List</label>
         <p>
-          Between 10 and 20 words. Puzzles are randomly generated using a
-          selection of your words at play time.
+          Between 10 and 20 words. Every word should consist of between 3 to 6
+          letters. Puzzles are randomly generated using a selection of your
+          words at play time.
         </p>
         <div class="word-list">
           <div class="word-list-row1">
@@ -237,10 +251,12 @@
   }
 
   .title {
+    font-size: 1rem;
     height: 30px;
   }
 
   .description {
+    font-size: 1rem;
     height: 50px;
   }
 
