@@ -14,6 +14,7 @@
   export let params = {};
   // get the title from the params
   const { title } = params;
+  const titleWithFirstLetterCapital = title[0].toUpperCase() + title.slice(1);
 
   let dataByTitle = [];
   let objectDataFromData;
@@ -84,12 +85,12 @@
         if (direction === "horizontal") {
           for (let i = 0; i < word.length; i++) {
             puzzleGrid[startingRowPosition][startingColumnPosition + i] =
-              word[i];
+              word[i].toUpperCase();
           }
         } else if (direction === "vertical") {
           for (let i = 0; i < word.length; i++) {
             puzzleGrid[startingRowPosition + i][startingColumnPosition] =
-              word[i];
+              word[i].toUpperCase();
           }
         }
       });
@@ -113,20 +114,65 @@
 </script>
 
 <Header />
-
-<div class="puzzle-grid-container">
-  {#each puzzleGrid as row, rowIndex}
-    <div
-      class="puzzle-grid-row_cell"
-      role="button"
-      tabindex="0"
-      on:mousedown={checkWord}
-    >
-      {#each row as randomAlphabet, colIndex }
-        <div class="puzzle-grid-column_cell">{randomAlphabet}</div>
+<main>
+  <div class="game-title">{titleWithFirstLetterCapital}</div>
+  <div class="game-container">
+    <div class="puzzle-grid-container">
+      {#each puzzleGrid as row}
+        <div
+          class="puzzle-grid-row_cell"
+          role="button"
+          tabindex="0"
+          on:mousedown={checkWord}
+        >
+          {#each row as randomAlphabet}
+            <div class="puzzle-grid-column_cell">{randomAlphabet}</div>
+          {/each}
+        </div>
       {/each}
     </div>
-  {/each}
-</div>
-<div>{params.title} 게임 페이지입니당</div>
-<p>{wordList}</p>
+    <div class="answer-words-list_container">
+      {#if wordList !== null}
+        {#each wordList as word}
+          <div class="answer-word">{word.toUpperCase()}</div>
+        {/each}
+      {/if}
+    </div>
+  </div>
+</main>
+
+<style>
+  main {
+    margin: 40px 50px 20px 50px;
+  }
+  .game-title {
+    font-size: 30px;
+  }
+  .game-container {
+    display: flex;
+  }
+  .puzzle-grid-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 20px;
+  }
+  .puzzle-grid-column_cell {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 23px;
+  }
+
+  .answer-words-list_container {
+    margin: 35px 0px 0px 30px;
+    font-size: 20px;
+  }
+
+  .answer-word {
+    margin-top: 12px;
+  }
+</style>

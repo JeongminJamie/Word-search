@@ -1,6 +1,6 @@
 <header>
   <div class="header-container">
-    <div class="title=container">
+    <div class="title-container">
       <a class="title" href="/"> The Word Search </a>
     </div>
     <div class="login-signup-container">
@@ -16,6 +16,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 15px 10px 15px;
+    font-size: 40px;
   }
 
   a {
