@@ -1,10 +1,9 @@
 <script>
   import Header from "../components/Header.svelte";
-  import { getDatabase, ref, child, push } from "firebase/database";
-  import { gameUrl$ } from "../store.js";
+
+  import { getDatabase, ref, push } from "firebase/database";
 
   const db = getDatabase();
-  const gamesRef = ref(db, "games/");
 
   let title;
   let description;
@@ -31,6 +30,7 @@
 
   let wordList = [];
   let isSubmitted = false;
+  let gameUrl;
 
   const addtoWordList = (word) => {
     if (word.length > 2 && word.length < 7) {
@@ -41,20 +41,19 @@
   };
 
   const handleSubmit = () => {
-    if (wordList.length > 9 && wordList.length <= 20) {
-      for (const word of wordList) {
-        push(gamesRef, {
+    try {
+      if (wordList.length >= 10 && wordList.length <= 20) {
+        push(ref(db, "games/"), {
           title,
           description,
+          words: wordList,
         });
-        gamesRef.child("words").setValue(word);
         isSubmitted = true;
-        const newGameUrl = `/#/puzzle/${title}`;
-        gameUrl$.set(newGameUrl);
-        console.log(gameUrl$);
-      }
+        gameUrl = `http://localhost:5173/#/puzzles/${title}`
+      } else alert("Please fill out more than 10 fields");
+    } catch (e) {
+      console.log(e);
     }
-    alert("Please fill out more than 10 fields");
   };
 </script>
 
