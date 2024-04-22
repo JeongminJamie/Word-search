@@ -14,11 +14,11 @@
   export let params = {};
   // get the title from the params
   const { title } = params;
+
   let dataByTitle = [];
   let objectDataFromData;
-
   // the word list of the title from db --> get from the db
-  let wordList;
+  let wordList = null;
 
   // function getting the data seeing params.title matches to the title from games table
   const fetchDataByTitle = async (title) => {
@@ -64,8 +64,12 @@
   }
 
   // put words from the wordList in the puzzleGrid
-  $: wordList
-    ? wordList.forEach((word) => {
+  $: {
+    if (wordList === null) {
+      console.log("fetching data...");
+    } else {
+      console.log(wordList);
+      wordList.forEach((word) => {
         //decide the direction with 50% of chance using Math.random() < 0.5 ?
         let direction = Math.random() < 0.5 ? "horizontal" : "vertical";
         // make a number for starting position of a row
@@ -88,8 +92,9 @@
               word[i];
           }
         }
-      })
-    : console.log("A Word list doesn't exist");
+      });
+    }
+  }
 
   let selectedWord = "";
 
@@ -108,7 +113,7 @@
 </script>
 
 <Header />
-<!-- 
+
 <div class="puzzle-grid-container">
   {#each puzzleGrid as row, rowIndex}
     <div
@@ -122,6 +127,6 @@
       {/each}
     </div>
   {/each}
-</div> -->
+</div>
 <div>{params.title} 게임 페이지입니당</div>
 <p>{wordList}</p>
