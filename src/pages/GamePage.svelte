@@ -10,11 +10,11 @@
   import { onMount } from "svelte";
 
   import Header from "../components/Header.svelte";
+  import StartGame from "../components/StartGame.svelte";
 
   export let params = {};
   // get the title from the params
   const { title } = params;
-  const titleWithFirstLetterCapital = title[0].toUpperCase() + title.slice(1);
 
   let dataByTitle = [];
   let objectDataFromData;
@@ -114,8 +114,9 @@
 </script>
 
 <Header />
+<StartGame />
 <main>
-  <div class="game-title">{titleWithFirstLetterCapital}</div>
+  <div class="game-title">{params.title}</div>
   <div class="game-container">
     <div class="puzzle-grid-container">
       {#each puzzleGrid as row}
@@ -147,6 +148,7 @@
   }
   .game-title {
     font-size: 30px;
+    text-transform: capitalize;
   }
   .game-container {
     display: flex;
@@ -156,6 +158,8 @@
     flex-direction: row;
     align-items: center;
     margin-top: 20px;
+    position: relative;
+    width: 50%;
   }
   .puzzle-grid-column_cell {
     width: 50px;
