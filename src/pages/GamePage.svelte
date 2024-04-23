@@ -69,7 +69,6 @@
     if (wordList === null) {
       console.log("fetching data...");
     } else {
-      console.log(wordList);
       wordList.forEach((word) => {
         //decide the direction with 50% of chance using Math.random() < 0.5 ?
         let direction = Math.random() < 0.5 ? "horizontal" : "vertical";
@@ -98,19 +97,32 @@
   }
 
   let selectedWord = "";
+  let isMouseDown = false;
+  let correctionCount = 0;
 
-  const selectWord = (row, col) => {
-    selectedWord += puzzleGrid[row][col];
+  const handleMouseDown = (rowIndex, colIndex) => {
+    isMouseDown = true;
+    selectedWord += puzzleGrid[rowIndex][colIndex];
   };
 
-  const checkWord = () => {
-    if (wordList.includes(selectedWord)) {
-      alert("Correct!");
-    } else {
-      alert("You can do better");
+  const handleMouseMove = (rowIndex, colIndex) => {
+    if (isMouseDown) {
+      selectedWord += puzzleGrid[rowIndex][colIndex];
     }
-    selectedWord = "";
   };
+
+  function handleMouseUp() {
+    isMouseDown = false;
+    if (wordList !== null && selectedWord.length > 2) {
+      if (wordList.includes(selectedWord)) {
+        console.log("Correct");
+        correctionCount += 1;
+      } else {
+        console.log("You can do better");
+      }
+      selectedWord = "";
+    }
+  }
 </script>
 
 <Header />
@@ -119,15 +131,19 @@
   <div class="game-title">{params.title}</div>
   <div class="game-container">
     <div class="puzzle-grid-container">
-      {#each puzzleGrid as row}
-        <div
-          class="puzzle-grid-row_cell"
-          role="button"
-          tabindex="0"
-          on:mousedown={checkWord}
-        >
-          {#each row as randomAlphabet}
-            <div class="puzzle-grid-column_cell">{randomAlphabet}</div>
+      {#each puzzleGrid as row, rowIndex}
+        <div class="puzzle-grid-row_cell" role="button" tabindex="0">
+          {#each row as randomAlphabet, colIndex}
+            <div
+              class="puzzle-grid-column_cell"
+              role="button"
+              tabindex="0"
+              on:mousedown={() => handleMouseDown(rowIndex, colIndex)}
+              on:mousemove={() => handleMouseMove(rowIndex, colIndex)}
+              on:mouseup={handleMouseUp}
+            >
+              {randomAlphabet}
+            </div>
           {/each}
         </div>
       {/each}
@@ -138,6 +154,10 @@
           <div class="answer-word">{word.toUpperCase()}</div>
         {/each}
       {/if}
+    </div>
+    <div class="time-correction_container">
+      <div>Time taken:</div>
+      <div class="correction-count">Correction Count: {correctionCount}</div>
     </div>
   </div>
 </main>
@@ -172,11 +192,22 @@
   }
 
   .answer-words-list_container {
-    margin: 35px 0px 0px 30px;
+    margin: 35px 0px 0px 20px;
     font-size: 20px;
   }
 
   .answer-word {
     margin-top: 12px;
+  }
+
+  .time-correction_container {
+    margin-top: 47px;
+    margin-left: 50px;
+    font-size: 1.5rem;
+    font-weight: 550;
+  }
+
+  .correction-count {
+    margin-top: 10px;
   }
 </style>

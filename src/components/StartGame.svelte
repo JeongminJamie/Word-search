@@ -1,20 +1,36 @@
 <script>
-  // input user and click start
-  // then the user can the game cleary
-  // if (isStartClicked) hide the component and show the game
+  import { getDatabase, ref, push } from "firebase/database";
+  let username;
+  let isStartClicked = false;
+
+  const formSubmitHandler = () => {
+    if (username.length < 2) {
+      alert("Your name is too short");
+    } else {
+      const db = getDatabase();
+      push(ref(db, "users/"), {
+        username,
+        correct_count: 0,
+      });
+
+      isStartClicked = true;
+    }
+  };
 </script>
 
-<main class="start-form-container">
-  <form>
-    <div class="start-container">
-      <div class="start-name-container">
-        <label for="name">Name</label>
-        <input id="name" />
+{#if !isStartClicked}
+  <main class="start-form-container">
+    <form on:submit|preventDefault={formSubmitHandler}>
+      <div class="start-container">
+        <div class="start-name-container">
+          <label for="name">Name</label>
+          <input id="name" bind:value={username} />
+        </div>
+        <button type="submit">Start</button>
       </div>
-      <button>Start</button>
-    </div>
-  </form>
-</main>
+    </form>
+  </main>
+{/if}
 
 <style>
   .start-form-container {
